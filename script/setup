@@ -17,8 +17,12 @@ fi
 mkdir -p config
 
 if [ ! -n "$DEVCONTAINER" ];then
-  python3 -m venv venv
-  source venv/bin/activate
+    python3 -m venv ../venv
+    if [ -f ../venv/bin/activate ];then
+        source ../venv/bin/activate
+    else
+        source ../venv/Scripts/activate
+    fi
 fi
 
 script/bootstrap

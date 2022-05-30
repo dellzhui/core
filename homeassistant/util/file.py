@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import tempfile
 
 from atomicwrites import AtomicWriter
@@ -35,8 +36,8 @@ def write_utf8_file_atomic(
     """
     try:
         with AtomicWriter(filename, overwrite=True).open() as fdesc:
-            if not private:
-                os.fchmod(fdesc.fileno(), 0o644)
+            if not private and sys.platform.startswith(("darwin", "linux")):
+               os.fchmod(fdesc.fileno(), 0o644)
             fdesc.write(utf8_data)
     except OSError as error:
         _LOGGER.exception("Saving file failed: %s", filename)
@@ -62,8 +63,8 @@ def write_utf8_file(
         ) as fdesc:
             fdesc.write(utf8_data)
             tmp_filename = fdesc.name
-            if not private:
-                os.fchmod(fdesc.fileno(), 0o644)
+            if not private and sys.platform.startswith(("darwin", "linux")):
+               os.fchmod(fdesc.fileno(), 0o644)
         os.replace(tmp_filename, filename)
     except OSError as error:
         _LOGGER.exception("Saving file failed: %s", filename)
